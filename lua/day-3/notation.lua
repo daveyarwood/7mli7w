@@ -1,5 +1,7 @@
 local scheduler = require 'scheduler'
 
+-- (I hacked this a bit to allow rests)
+
 local function note(letter, octave)
   local notes = {
     C  = 0,   Cs = 1,   D = 2,   Ds = 3,   E = 4,
@@ -9,7 +11,11 @@ local function note(letter, octave)
 
   local notes_per_octave = 12
 
-  return (octave + 1) * notes_per_octave + notes[letter]
+  if letter == 'R' then
+    return nil
+  else
+    return (octave + 1) * notes_per_octave + notes[letter]
+  end
 end
 
 local tempo = 100
@@ -29,11 +35,7 @@ end
 
 local function parse_note(s)
   local letter, octave, value =
-    string.match(s, "([A-Gs]+)(%d+)(%a+)")
-
-  if not (letter and octave and value) then
-    return nil
-  end
+    string.match(s, "([A-GRs]+)(%d*)(%a+)")
 
   return {
     note     = note(letter, octave),
@@ -46,9 +48,9 @@ NOTE_UP   = 0x80
 VELOCITY  = 0x7f
 
 function play(note, duration)
-  midi_send(NOTE_DOWN, note, VELOCITY)
+  if note then midi_send(NOTE_DOWN, note, VELOCITY) end
   scheduler.wait(duration)
-  midi_send(NOTE_UP, note, VELOCITY)
+  if note then midi_send(NOTE_UP, note, VELOCITY) end
 end
 
 local function part(t)
