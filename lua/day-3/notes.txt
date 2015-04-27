@@ -1,0 +1,11 @@
+Lua, Day 3 Homework
+
+Easy:
+  - in lieu of a favorite adventure movie's theme song, I grabbed a piece of classical
+    music from the Petrucci Project, a waltz by E. Waldteufel. One of the piano hand
+    parts starts with rests, so I implemented rests in notation.lua as the letter 'R'
+    and the note length, e.g. Rq is a quarter note rest.
+  - I successfully modified play.cpp to `require 'notation'` at the beginning of every
+    song and `song.go()` at the end, but prefer it the way it is, so left it out. It
+    was as easy as adding `luaL_dostring(L, "song = require 'notation'");` and 
+    `luaL_dostring(L, "song.go()");` before and after the `luaL_dofile` line. Cool!
