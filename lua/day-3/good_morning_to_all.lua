@@ -8,7 +8,7 @@ notes = {
 function play_song()
   for i = 1, #notes do
     local symbol = notation.parse_note(notes[i])
-    notation.play(symbol.note, symbol.duration)
+    notation.play(symbol.note, symbol.duration, symbol.volume)
   end
 end
 

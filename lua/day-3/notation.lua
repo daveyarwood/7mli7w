@@ -1,7 +1,5 @@
 local scheduler = require 'scheduler'
 
--- (I hacked this a bit to allow rests)
-
 local function note(letter, octave)
   local notes = {
     C  = 0,   Cs = 1,   D = 2,   Ds = 3,   E = 4,
@@ -33,13 +31,23 @@ local function duration(value)
   return durations[value] * quarter
 end
 
+local function volume(vol)
+  if vol and #vol > 0 and #vol <= 5 then
+    local underscores = #vol
+    return underscores * 25
+  else
+    return 127
+  end
+end
+
 local function parse_note(s)
-  local letter, octave, value =
-    string.match(s, "([A-GRs]+)(%d*)(%a+)")
+  local letter, octave, value, vol =
+    string.match(s, "([A-GRs]+)(%d*)(%a+)(_*)")
 
   return {
     note     = note(letter, octave),
-    duration = duration(value)
+    duration = duration(value),
+    volume   = volume(vol)
   }
 end
 
@@ -47,16 +55,16 @@ NOTE_DOWN = 0x90
 NOTE_UP   = 0x80
 VELOCITY  = 0x7f
 
-function play(note, duration)
-  if note then midi_send(NOTE_DOWN, note, VELOCITY) end
+function play(note, duration, volume)
+  if note then midi_send(0, volume, NOTE_DOWN, note, VELOCITY) end
   scheduler.wait(duration)
-  if note then midi_send(NOTE_UP, note, VELOCITY) end
+  if note then midi_send(0, volume, NOTE_UP, note, VELOCITY) end
 end
 
 local function part(t)
   local function play_part()
     for i = 1, #t do
-      play(t[i].note, t[i].duration)
+      play(t[i].note, t[i].duration, t[i].volume)
     end
   end
 

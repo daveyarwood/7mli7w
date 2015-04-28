@@ -9,3 +9,23 @@ Easy:
     song and `song.go()` at the end, but prefer it the way it is, so left it out. It
     was as easy as adding `luaL_dostring(L, "song = require 'notation'");` and 
     `luaL_dostring(L, "song.go()");` before and after the `luaL_dofile` line. Cool!
+
+Medium:
+  - My initial idea for volume syntax was:
+    . quietest
+    _ little bit louder now
+    - a little bit louder now
+    * and a little bit louder now
+    @ and a little bit louder now!
+
+    That ended up not working because none of those characters are valid in Lua variable
+    names, with the exception of the underscore. So I scrapped that idea and went with
+    adding underscores to the end of the note -- each underscore represents 25 units of
+    volume, so _ = 25, __ = 50, ___ = 75, etc.
+
+Medium/Hard
+
+  - I didn't really feel like learning more C++ (why would I? why would anyone?), so I
+    found Charlie Harvey's solution, which he awesomely posted on his blog, and pretty
+    much copied his C++ code verbatim. I still learned a lot about how Lua interacts with
+    C++, so THERE!
