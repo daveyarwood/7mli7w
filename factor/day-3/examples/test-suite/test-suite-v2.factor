@@ -1,6 +1,7 @@
 USING: formatting io io.streams.string kernel math math.parser namespaces
        regexp sequences splitting strings tools.test ;
 USE: examples.fizzbuzz
+USE: examples.checkout
 IN: examples.test-suite
 
 : test-all-examples ( -- )
