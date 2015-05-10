@@ -43,4 +43,21 @@ main = display <~ gameState
 
 gameState = foldp stepGame defaultGame input
 
--- steps (todo)
+-- steps
+
+stepGame input game =
+  case game.state of
+    Play     -> stepGamePlay input game
+    Pause    -> stepGamePaused input game
+    GameOver -> stepGameFinished input game
+
+stepGamePlay {space, x, delta, rand} ({state, heads, player} as game) =
+  { game | state  <- stepGameOver x heads
+         , heads  <- stepHeads heads delta x player.score rand
+         , player <- stepPlayer player x heads }
+
+stepGameOver x heads =
+  if allHeadsSafe (toFloat x) heads then Play else GameOver
+
+headSafe x head =
+  head.y < bottom || abs (head.x - x) < 50
