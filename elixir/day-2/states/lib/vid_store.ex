@@ -8,11 +8,24 @@ defmodule VidStore do
     return: [to: :available, calls: [&VidStore.returning/1]],
     lose: [to: :lost, calls: [&VidStore.losing/1]]
 
-  state :lost, []
+  state :lost, 
+    find: [to: :found, calls: [&VidStore.finding/1]]
+
+  state :found,
+    return: [to: :available, calls: [&VidStore.returning/1]],
+    rent: [to: :rented, calls: [&VidStore.renting/1]]
+
+  def before_renting video do
+    log video, "About to rent #{video.title}"
+  end
 
   def renting video do
     vid = log video, "Renting #{video.title}"
     %{vid | times_rented: (video.times_rented + 1)}
+  end
+
+  def after_renting video do
+    log video, "Rented #{video.title}"
   end
 
   def returning video do
@@ -21,6 +34,10 @@ defmodule VidStore do
 
   def losing video do
     log video, "Losing #{video.title}"
+  end
+
+  def finding video do
+    log video, "Finding #{video.title}"
   end
 
   def log video, message do

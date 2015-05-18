@@ -14,7 +14,8 @@ defmodule StateMachine do
   end
 
   defmacro __before_compile__(env) do
-    states = Module.get_attribute(env.module, :states)
+    module = env.module
+    states = Module.get_attribute(module, :states)
     events = states
              |> Keyword.values
              |> List.flatten
@@ -25,20 +26,31 @@ defmodule StateMachine do
         unquote(states)
       end
 
-      unquote event_callbacks(events)
+      unquote event_callbacks(events, module)
     end
   end
 
-  def event_callback(name) do
+  def hook(module, fn_name, prefix, context) do
+    f = String.to_atom(prefix <> to_string(fn_name))
+    if function_exported? module, f, 1 do
+      apply module, f, [context]
+    else
+      context
+    end
+  end
+
+  def event_callback(name, module) do
     callback = name
     quote do
       def unquote(name)(context) do
-        StateMachine.Behavior.fire(state_machine, context, unquote(callback))
+        context = hook unquote(module), unquote(name), "before_", context
+        context = StateMachine.Behavior.fire(state_machine, context, unquote(callback))
+        context = hook unquote(module), unquote(name), "after_", context
       end
     end
   end
 
-  def event_callbacks(names) do
-    Enum.map names, &event_callback/1
+  def event_callbacks(names, module) do
+    Enum.map names, fn name -> event_callback name, module end
   end
 end
