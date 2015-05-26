@@ -1,4 +1,5 @@
 #!/usr/bin/env boot
+; -*- mode: Clojure;-*-
 ; vim: ft=clojure
 
 ; miniKanren, Day 1, Easy #1
