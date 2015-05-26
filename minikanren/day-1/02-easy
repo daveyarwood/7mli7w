@@ -1,0 +1,24 @@
+#!/usr/bin/env boot
+; vim: ft=clojure
+
+; miniKanren, Day 1, Easy #2
+; Try appendo with q in all 3 argument positions.
+
+(set-env! :dependencies '[[org.clojure/core.logic "0.8.10"]])
+
+(require '[clojure.core.logic :refer :all :exclude (fail is)]
+         '[clojure.test       :refer :all])
+
+(deftest appendo-tests
+  (testing "first position"
+    (is (= '((1)) (run* [q]
+                    (appendo q [2 3] [1 2 3])))))
+  (testing "second position"
+    (is (= '((3 4)) (run* [q]
+                      (appendo [1 2] q [1 2 3 4])))))
+  (testing "third position"
+    (is (= '((:foo :bar :baz :qux))
+           (run* [q]
+             (appendo [:foo :bar] [:baz :qux] q))))))
+
+(run-tests)
