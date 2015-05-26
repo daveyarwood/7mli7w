@@ -1,0 +1,49 @@
+#!/usr/bin/env boot
+; vim: ft=clojure
+
+; miniKanren, Day 1, Medium #2
+; Construct a logic program that finds all scientists who've won Turing Awards.
+
+(set-env! :dependencies '[[org.clojure/core.logic "0.8.10"]])
+
+(require '[clojure.core.logic      :refer :all :exclude (fail is)]
+         '[clojure.core.logic.pldb :refer :all]
+         '[clojure.test            :refer :all])
+
+(db-rel mano x)
+(db-rel womano x)
+(db-rel vitalo p s)
+(db-rel turingo p y)
+
+(def facts
+  (db
+    [mano :alan-turing]
+    [womano :grace-hopper]
+    [mano :leslie-lamport]
+    [mano :alonzo-church]
+    [womano :ada-lovelace]
+    [womano :barbara-liskov]
+    [womano :frances-allen]
+    [mano :john-mccarthy]
+    [vitalo :alan-turing :dead]
+    [vitalo :grace-hopper :dead]
+    [vitalo :leslie-lamport :alive]
+    [vitalo :alonzo-church :dead]
+    [vitalo :ada-lovelace :dead]
+    [vitalo :barbara-liskov :alive]
+    [vitalo :frances-allen :alive]
+    [vitalo :john-mccarthy :dead]
+    [turingo :leslie-lamport :2013]
+    [turingo :barbara-liskov :2008]
+    [turingo :frances-allen :2006]
+    [turingo :john-mccarthy :1971]))                  
+
+(deftest turing-award-winning-scientists
+  (testing "finding all scientists who've won Turing Awards"
+    (is (= #{:leslie-lamport :barbara-liskov :frances-allen :john-mccarthy}
+           (set (with-db facts
+                  (run* [q]
+                    (fresh [_]
+                      (turingo q _)))))))))
+
+(run-tests)

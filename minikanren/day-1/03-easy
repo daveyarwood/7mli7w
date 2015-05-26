@@ -1,0 +1,35 @@
+#!/usr/bin/env boot
+; vim: ft=clojure
+
+; miniKanren, Day 1, Easy #3
+; Create languageo and systemo database relations and add relevant facts.
+
+(set-env! :dependencies '[[org.clojure/core.logic "0.8.10"]])
+
+(require '[clojure.core.logic      :refer :all :exclude (fail is)]
+         '[clojure.core.logic.pldb :refer :all]
+         '[clojure.test            :refer :all])
+
+(db-rel languageo x)
+(db-rel systemo l s)
+
+(def facts
+  (db
+    [languageo :erlang]
+    [languageo :ruby]
+    [languageo :clojure]
+    [systemo :erlang :concurrency]
+    [systemo :ruby :aesthetics]
+    [systemo :clojure :general-badassery]))
+
+(deftest db-rel-tests
+  (testing "database relations"
+    (is (= #{:erlang :ruby :clojure}
+           (set (with-db facts
+                  (run* [q]
+                    (languageo q))))))
+    (is (= '(:clojure) (with-db facts
+                         (run* [q]
+                           (systemo q :general-badassery)))))))
+                       
+(run-tests)
