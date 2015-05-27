@@ -1,0 +1,49 @@
+#!/usr/bin/env boot
+; -*- mode: Clojure;-*-
+; vim: ft=clojure
+
+(set-env! :dependencies '[[org.clojure/core.logic "0.8.10"]])
+
+(require '[clojure.core.logic      :refer :all :exclude (fail is)]
+         '[clojure.core.logic.pldb :refer :all]
+         '[clojure.core.logic.fd   :as fd])
+
+(def story-elements
+  [[:maybe-telegram-girl :telegram-girl
+    "A singing telegram girl arrives."]
+   [:maybe-motorist :motorist
+    "A stranded motorist comes asking for help."]
+   [:motorist :policeman
+    "Investigating an abandoned car, a policeman appears."]
+   [:motorist :dead-motorist
+    "The motorist is found dead in the lounge, killed by a wrench."]
+   [:telegram-girl :dead-telegram-girl
+    "The telegram girl is murdered in the hall with the revolver."]
+   [:policeman :dead-policeman
+    "The policeman is killed in the library with a lead pipe."]
+   [:dead-motorist :guilty-mustard
+    "Colonel Mustard killed the motorist, his old driver during the war."]
+   [:dead-motorist :guilty-scarlet
+    "Miss Scarlet killed the motorist to keep her secrets safe."]
+   ;; ...
+   ])
+
+(db-rel ploto a b)
+
+(def story-db
+  (reduce (fn [dbase elems]
+            (apply db-fact dbase ploto (take 2 elems)))
+          (db)
+          story-elements))
+
+(def start-state
+  [:maybe-telegram-girl :maybe-motorist
+   :wadsworth :mr-boddy :cook :yvette])
+
+(defn actiono [state new-state action]
+  (fresh [in out temp]
+    (membero in state)
+    (ploto in out)
+    (rembero in state temp)
+    (conso out temp new-state)
+    (== action [in out])))
