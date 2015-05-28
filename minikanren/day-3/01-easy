@@ -1,0 +1,23 @@
+#!/usr/bin/env boot
+; -*- mode: Clojure;-*-
+; vim: ft=clojure
+
+; miniKanren, Day 3, Easy #1
+; Code some other mathematical equations and have core.logic fill in the answers.
+
+(set-env! :dependencies '[[org.clojure/core.logic "0.8.10"]])
+
+(require '[clojure.core.logic      :refer :all :exclude (fail is)]
+         '[clojure.core.logic.pldb :refer :all]
+         '[clojure.core.logic.fd   :as fd])
+
+(prn
+  (run* [q]
+    (fresh [a b c]
+      (== q [a b c])
+      (fd/in a b c (fd/interval 1 100))
+      (fd/< a b)
+      (fd/< b c)
+      (fd/eq
+        (= (+ (* a a) (* b b))
+           (* c c))))))

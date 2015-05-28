@@ -25,8 +25,44 @@
     "Colonel Mustard killed the motorist, his old driver during the war."]
    [:dead-motorist :guilty-scarlet
     "Miss Scarlet killed the motorist to keep her secrets safe."]
-   ;; ...
-   ])
+   [:dead-motorist :guilty-peacock
+    "Mrs. Peacock killed the motorist."]
+   [:dead-telegram-girl :guilty-scarlet
+    "Miss Scarlet killed the telegram girl so she wouldn't talk."]
+   [:dead-telegram-girl :guilty-peacock
+    "Mrs. Peacock killed the telegram girl."]
+   [:dead-telegram-girl :guilty-wadsworth
+    "Wadsworth shot the telegram girl."]
+   [:dead-policeman :guilty-scarlet
+    "Miss Scarlet tried to cover her tracks by murdering the policeman."]
+   [:dead-policeman :guilty-peacock
+    "Mrs. Peacock killed the policeman."]
+   [:mr-boddy :dead-mr-boddy
+    "Mr. Boddy's body is found in the hall beaten to death with a candlestick."]
+   [:dead-mr-body :guilty-plum
+    "Mr. Plum killed Mr. Boddy thinking he was the real blackmailer."]
+   [:dead-mr-body :guilty-scarlet
+    "Miss Scarlet killed Mr. Boddy to keep him quiet."]
+   [:dead-mr-body :guilty-peacock
+    "Mrs. Peacock killed Mr. Boddy."]
+   [:cook :dead-cook
+    "The cook is found stabbed in the kitchen."]
+   [:dead-cook :guilty-scarlet
+    "Miss Scarlet killed the cook to silence her."]
+   [:dead-cook :guilty-peacock
+    "Mrs. Peacock killed her cook, who used to work for her."]
+   [:yvette :dead-yvette
+    "Yvette, the maid, is found strangled with the rope in the billiard room."]
+   [:dead-yvette :guilty-scarlet
+    "Miss Scarlet killed her old employee, Yvette."]
+   [:dead-yvette :guilty-peacock
+    "Mrs. Peacock killed Yvette."]
+   [:dead-yvette :guilty-white
+    "Mrs. White killed Yvette, who had an affair with her husband."]
+   [:wadsworth :dead-wadsworth
+    "Wadsworth is found shot dead in the hall."]
+   [:dead-wadsworth :guilty-green
+    "Mr. Green, an undercover FBI agent, shot Wadsworth."]])
 
 (db-rel ploto a b)
 
@@ -47,3 +83,28 @@
     (rembero in state temp)
     (conso out temp new-state)
     (== action [in out])))
+
+(declare storyo*)
+
+(defn storyo [end-elems actions]
+  (storyo* (shuffle start-state) end-elems actions))
+
+(defn storyo* [start-state end-elems actions]
+  (fresh [action new-state new-actions]
+    (actiono start-state new-state action)
+    (conso action new-actions actions)
+    (conda
+      [(everyg #(membero % new-state) end-elems)
+       (== new-actions [])]
+      [(storyo* new-state end-elems new-actions)])))
+
+(def story-map
+  (reduce (fn [m [e1 e2 desc]]
+            (assoc m [e1 e2] desc))
+          {}
+          story-elements))
+
+(defn print-story [actions]
+  (println "PLOT SUMMARY:")
+  (doseq [a actions]
+    (println (story-map a))))

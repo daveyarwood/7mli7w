@@ -1,0 +1,29 @@
+#!/usr/bin/env boot
+; -*- mode: Clojure;-*-
+; vim: ft=clojure
+
+; miniKanren, Day 3, Medium #1
+; Push "revealing the killer" story events to the end.
+
+(load-file "story")
+
+(set-env! :dependencies '[[org.clojure/core.logic "0.8.10"]])
+
+(require '[clojure.core.logic      :refer :all :exclude (fail is)]
+         '[clojure.core.logic.pldb :refer :all]
+         '[clojure.core.logic.fd   :as fd])
+
+(defn story-stream [& goals]
+  (with-db story-db
+    (run* [q]
+      (storyo (vec goals) q))))
+
+(defn- reveals-killer? [[x y]]
+  (.startsWith (name y) "guilty"))
+
+(defn reveal-killers-at-end [story]
+  (let [grouped (group-by reveals-killer? story)]
+    (concat (grouped false) (grouped true))))
+
+(print-story (nth (map reveal-killers-at-end (story-stream :dead-yvette)) 20))
+       
